@@ -22,7 +22,7 @@ common_SRC_FILES := \
 	pngwtran.c \
 	pngwutil.c
 
-common_CFLAGS := -std=gnu89 -fvisibility=hidden ## -fomit-frame-pointer
+common_CFLAGS := -fvisibility=hidden ## -fomit-frame-pointer
 
 ifeq ($(HOST_OS),windows)
   ifeq ($(USE_MINGW),)
@@ -58,15 +58,10 @@ include $(BUILD_HOST_STATIC_LIBRARY)
 # For the device
 # =====================================================
 
-ifeq ($(ARCH_ARM_HAVE_NEON),true)
-   common_SRC_FILES += contrib/pngneon/png_read_filter_row_neon.s
-   common_CFLAGS += -D__ARM_HAVE_NEON
-endif
-
 include $(CLEAR_VARS)
-LOCAL_CLANG := true
+
 LOCAL_SRC_FILES := $(common_SRC_FILES)
-LOCAL_CFLAGS += $(common_CFLAGS) -ftrapv
+LOCAL_CFLAGS += $(common_CFLAGS)
 LOCAL_C_INCLUDES += $(common_C_INCLUDES) \
 	external/zlib
 LOCAL_SHARED_LIBRARIES := \
@@ -79,13 +74,18 @@ LOCAL_COPY_HEADERS := $(common_COPY_HEADERS)
 
 include $(BUILD_STATIC_LIBRARY)
 
-# For testing
-# =====================================================
 
 include $(CLEAR_VARS)
-LOCAL_C_INCLUDES:= $(common_C_INCLUDES) external/zlib
-LOCAL_SRC_FILES:= $(common_SRC_FILES) pngtest.c
-LOCAL_MODULE := pngtest
-LOCAL_SHARED_LIBRARIES:= libz
-LOCAL_MODULE_TAGS := debug
-include $(BUILD_EXECUTABLE)
+
+LOCAL_SRC_FILES := $(common_SRC_FILES)
+LOCAL_CFLAGS += $(common_CFLAGS)
+LOCAL_C_INCLUDES += $(common_C_INCLUDES) \
+        external/zlib
+LOCAL_SHARED_LIBRARIES := \
+        libz
+
+LOCAL_MODULE:= libpng
+
+LOCAL_PRELINK_MODULE := false
+
+include $(BUILD_SHARED_LIBRARY)
