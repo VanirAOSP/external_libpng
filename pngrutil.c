@@ -4136,11 +4136,12 @@ png_read_IDAT_data(png_structrp png_ptr, png_bytep output,
 
       if (ret != Z_OK) {
 #ifdef PNG_INDEX_SUPPORTED
-        if (png_ptr->index) {
-          if (png_ptr->row_number != png_ptr->height - 1) {
-            png_error(png_ptr, png_ptr->zstream.msg ? png_ptr->zstream.msg : "Decompression error");
-          }
-        } else
+         if (png_ptr->index) {
+            if (png_ptr->row_number != png_ptr->height - 1) {
+               png_error(png_ptr, png_ptr->zstream.msg ?
+                   png_ptr->zstream.msg : "Decompression error");
+            }
+         } else
 #endif
       {
          png_zstream_error(png_ptr, ret);
